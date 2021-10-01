@@ -75,7 +75,7 @@ export const validate_jira = async (ctx: ReporterContext): Promise<boolean> => {
   const user = await response.json()
   log_jira(
     ctx,
-    `Authenticated with the user:\n  ${ctx.chalk.cyan.bold(
+    `\nAuthenticated with the user:\n  ${ctx.chalk.cyan.bold(
       user.displayName
     )} (${ctx.chalk.cyan.bold(user.name)})`
   )

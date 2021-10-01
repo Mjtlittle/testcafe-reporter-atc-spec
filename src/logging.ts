@@ -121,7 +121,7 @@ export const log_header = (ctx: ReporterContext, title: string) => {
   parts.push('│\n')
   parts.push('└')
   parts.push('─'.repeat(width - 2))
-  parts.push('┘\n')
+  parts.push('┘')
 
   ctx //
     .setIndent(0)
@@ -138,13 +138,18 @@ export const log_subheader = (ctx: ReporterContext, text: string) => {
 }
 
 export const log_fixture = (ctx: ReporterContext, name: string) =>
-  log_subheader(ctx, `FIXTURE: ${ctx.chalk.reset(name)}`)
+  log_subheader(ctx, `\nFIXTURE: ${ctx.chalk.reset(name)}`)
 
 export const log_user_agents = (
   ctx: ReporterContext,
   user_agents: string[]
 ) => {
-  ctx.setIndent(1).useWordWrap(true).write(ctx.chalk.bold('Browsers')).newline()
+  ctx
+    .setIndent(1)
+    .newline()
+    .useWordWrap(true)
+    .write(ctx.chalk.bold('Browsers'))
+    .newline()
 
   user_agents.forEach((agent) => {
     ctx //
@@ -199,6 +204,7 @@ export const log_results = (
 
   ctx //
     .setIndent(1)
+    .newline()
     .write(parts.join(''))
     .newline()
 }
@@ -207,9 +213,9 @@ export const log_current_time = (ctx: ReporterContext) => {
   const now = new Date()
   ctx
     .setIndent(1)
+    .newline()
     .useWordWrap(true)
     .write(ctx.chalk.bold(format(now, 'PPPppp')))
-    .newline()
     .newline()
 }
 

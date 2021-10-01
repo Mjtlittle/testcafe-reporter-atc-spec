@@ -76,6 +76,7 @@ export default (): Reporter => ({
     }
 
     log_header(ctx, 'End')
+    ctx.newline()
   },
 })
 
