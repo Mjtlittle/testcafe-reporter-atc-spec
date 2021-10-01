@@ -95,16 +95,16 @@ export const log_test_run = (
       total += 1
     }
 
-    if (info.unstable)
-      parts.push(
-        ctx.chalk.yellow('(UNSTABLE: ') +
-          q_summary.join('') +
-          ctx.chalk.yellow(')')
-      )
+    parts.push(
+      ctx.chalk.yellow('(UNSTABLE: ') +
+        q_summary.join('') +
+        ctx.chalk.yellow(')')
+    )
   }
 
   ctx //
     .setIndent(1)
+    .useWordWrap(false)
     .write(parts.join(''))
     .newline()
 }

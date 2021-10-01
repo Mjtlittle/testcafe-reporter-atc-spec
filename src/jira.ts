@@ -89,7 +89,7 @@ export const report_jira_results = async (
   test_results: TestResult[]
 ) => {
   // * collect all jira test results
-  // * separate them by testplan
+  // * separate them by test plan
 
   let test_plans = new Map<string | undefined, TestResult[]>()
   let used_jira_keys = new Set()
@@ -141,7 +141,7 @@ export const report_jira_execution = async (
   // https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-XrayJSONresults
 
   const request_subject = test_plan_key
-    ? `testplan ${test_plan_key}`
+    ? `test plan ${test_plan_key}`
     : 'all unassociated tests'
 
   const body = {
