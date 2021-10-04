@@ -147,14 +147,17 @@ export const report_jira_execution = async (
     ? `test plan ${test_plan_key}`
     : 'all unassociated tests'
 
+  const iso_start_time = formatISO(start_time)
+  const iso_end_time = formatISO(end_time)
+
   const body = {
     info: {
       // project: 'SPDRTEST',
       summary: `Execution of ${request_subject}`,
       description: 'This test execution was automatically generated.',
       //
-      startDate: formatISO(start_time),
-      finishDate: formatISO(end_time),
+      startDate: iso_start_time,
+      finishDate: iso_end_time,
       testPlanKey: test_plan_key,
       //
       // version: 'v1.3',
@@ -163,23 +166,27 @@ export const report_jira_execution = async (
       // testEnvironments: ['iOS', 'Android'],
     },
     tests: test_results.map(({ meta, info }) => ({
-      // start: '2014-08-30T11:47:35+01:00',
-      // finish: '2014-08-30T11:50:56+01:00',
+      start: iso_start_time,
+      finish: iso_end_time,
 
       testKey: meta.jiraTestKey,
       status: status_from_info(info),
     })),
   }
+
   const response = await jira_fetch('rest/raven/1.0/import/execution', {
     method: 'POST',
     body: JSON.stringify(body),
   })
 
+  const response_text: string = await response.text()
+  const response_json: any = JSON.parse(response_text)
+
   ctx.newline()
 
   // handle 400
   if (response.status === 400) {
-    const { error } = await response.json()
+    const { error } = response_json
     log_jira_error(
       ctx,
       `Unable to import execution results for ${request_subject}. ${error}`
@@ -193,25 +200,29 @@ export const report_jira_execution = async (
       ctx,
       `Unable to import execution results for ${request_subject}, request returned with status ${response.status}`
     )
-    const text = await response.text()
-    log_jira(ctx, `${ctx.chalk.bold('Request response:')} ${text}`)
+    log_jira(ctx, `${ctx.chalk.bold('Request response:')} ${response_text}`)
     return false
   }
 
-  const data = await response.json()
-
-  //
+  // log jira tickets associated with the new execution
   log_jira(
     ctx,
     `Successfully created execution ${ctx.chalk.bold(
-      data.testExecIssue.key
-    )}\ncontaining all tests for ${request_subject}`
+      response_json.testExecIssue.key
+    )}\nto contain all tests for ${request_subject}`
   )
-
   log_jira(
     ctx,
     test_results
-      .map(({ meta }) => '- ' + ctx.chalk.blue(`[${meta.jiraTestKey}]`))
+      .map(({ meta }) => ' - ' + ctx.chalk.blue(`[${meta.jiraTestKey}]`))
       .join('\n')
   )
+
+  // log errors from the request if any
+  if (response_json?.infoMessages?.length > 0) {
+    log_jira_error(ctx, `Errors from creating execution ticket:`)
+    for (const message of response_json?.infoMessages) {
+      log_jira_error(ctx, ` - ${message}`)
+    }
+  }
 }
