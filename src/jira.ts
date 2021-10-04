@@ -94,7 +94,7 @@ export const report_jira_results = async (
   let test_plans = new Map<string | undefined, TestResult[]>()
   let used_jira_keys = new Set()
   for (const result of test_results) {
-    const { meta } = result
+    const { meta, info } = result
 
     // skip tests with invalid meta
     if (!is_valid_jira_meta(meta)) continue
@@ -108,6 +108,9 @@ export const report_jira_results = async (
       return false
     }
     used_jira_keys.add(test_key)
+
+    // skip skipped tests
+    if (info.skipped) continue
 
     // pull out test plan key if exists
     let test_plan_key: any = meta.jiraTestPlanKey as string
@@ -146,7 +149,7 @@ export const report_jira_execution = async (
 
   const body = {
     info: {
-      project: 'SPDRTEST',
+      // project: 'SPDRTEST',
       summary: `Execution of ${request_subject}`,
       description: 'This test execution was automatically generated.',
       //
@@ -171,6 +174,8 @@ export const report_jira_execution = async (
     method: 'POST',
     body: JSON.stringify(body),
   })
+
+  ctx.newline()
 
   // handle 400
   if (response.status === 400) {
@@ -198,7 +203,7 @@ export const report_jira_execution = async (
   //
   log_jira(
     ctx,
-    `\nSuccessfully created execution ${ctx.chalk.bold(
+    `Successfully created execution ${ctx.chalk.bold(
       data.testExecIssue.key
     )}\ncontaining all tests for ${request_subject}`
   )
