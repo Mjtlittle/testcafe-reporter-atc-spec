@@ -1,9 +1,11 @@
 # testcafe-reporter-atc-spec
 
-![](./preview.png)
+[![npm](https://img.shields.io/npm/v/testcafe-reporter-atc-spec?label=npm)](https://www.npmjs.com/package/testcafe-reporter-atc-spec)
+[![npm](https://img.shields.io/npm/v/testcafe?color=white&label=for%20TestCafe)](https://www.npmjs.com/package/testcafe)
 
 Reporter plugin for TestCafe which creates Jira XRAY execution issues for tests labeled with a test issue key. The output of the reporter is also formatted to show all of the data, so the spec reporter is no longer necessary. This package was made to work with the BMW ATC Jira server. However, it can be used elsewhere, as long as the server has the XRAY plugin.
 
+![](./preview.png)
 
 
 ## Install
@@ -70,12 +72,23 @@ test.meta({
 })
 ```
 
+You can also provide a list of test plan keys, if you need the results to show up on multiple test plans.
+
+```typescript
+test.meta({
+  jiraTestKey: 'SPDRTEST-123',
+  jiraTestPlanKey: ['SPDRTEST-111', 'SPDRTEST-222', 'SPDRTEST-333'],
+})('Example Test', async (t) => {
+  ...
+})
+```
+
 If you are using typescript, you can write out the following helper to insure that you provide the correct values (for linting/compilation)...
 
 ```typescript
 export interface JiraMetadata {
   jiraTestKey: string
-  jiraTestPlanKey?: string
+  jiraTestPlanKey?: string | string[]
 }
 
 export const jiraTest = (meta: JiraMetadata) => test.meta(meta)

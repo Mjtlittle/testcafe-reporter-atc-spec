@@ -112,13 +112,22 @@ export const report_jira_results = async (
     // skip skipped tests
     if (info.skipped) continue
 
-    // pull out test plan key if exists
-    let test_plan_key: any = meta.jiraTestPlanKey as string
-    if (!is_valid_jira_key(test_plan_key as string)) test_plan_key = undefined
+    // convert the test plan key into a list if not already
+    let test_plan_keys: any = meta.jiraTestPlanKey
+    if (!Array.isArray(test_plan_keys)) test_plan_keys = [test_plan_keys]
 
-    // add the result to the plan
-    if (!test_plans.has(test_plan_key)) test_plans.set(test_plan_key, [])
-    test_plans.get(test_plan_key)?.push(result)
+    // make sure all of the keys are valid
+    test_plan_keys = test_plan_keys.filter(is_valid_jira_key)
+
+    // add undefined if no valid keys
+    if (test_plan_keys.length == 0) test_plan_keys = [undefined]
+
+    // register the result with each test plan
+    for (const test_plan_key of test_plan_keys) {
+      // add the result to the plan
+      if (!test_plans.has(test_plan_key)) test_plans.set(test_plan_key, [])
+      test_plans.get(test_plan_key)?.push(result)
+    }
   }
 
   // * iterate over each test plan and make the execution for it
