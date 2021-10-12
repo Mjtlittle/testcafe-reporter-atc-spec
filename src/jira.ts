@@ -61,13 +61,13 @@ export const validate_jira = async (ctx: ReporterContext): Promise<boolean> => {
 
   // handle 401
   if (response.status === 401) {
-    log_jira_error(ctx, 'Invalid user credentials provided')
+    log_jira_error(ctx, '\nInvalid user credentials provided')
     return false
   }
 
   // handle other than 200
   if (response.status !== 200) {
-    log_jira_error(ctx, 'Unable to connect to Jira')
+    log_jira_error(ctx, '\nUnable to connect to Jira')
     return false
   }
 
@@ -155,6 +155,7 @@ export const report_jira_execution = async (
       // project: 'SPDRTEST',
       summary: `Execution of ${request_subject}`,
       description: 'This test execution was automatically generated.',
+      testEnvironments: ['INT'],
       //
       startDate: iso_start_time,
       finishDate: iso_end_time,
@@ -163,7 +164,6 @@ export const report_jira_execution = async (
       // version: 'v1.3',
       // user: 'admin',
       // revision: '1.0.42134',
-      // testEnvironments: ['iOS', 'Android'],
     },
     tests: test_results.map(({ meta, info }) => ({
       start: iso_start_time,
