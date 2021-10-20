@@ -1,6 +1,6 @@
 {
   "name": "testcafe-reporter-atc-spec",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Testcafe Reporter that integrates with BMW ATC Jira",
   "repository": {
     "type": "git",

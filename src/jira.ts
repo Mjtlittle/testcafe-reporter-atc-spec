@@ -8,6 +8,7 @@ import { log_jira, log_jira_error } from './logging'
 import fetch from 'node-fetch'
 // import formatISO from 'date-fns/formatISO'
 import { formatISO } from 'date-fns'
+import { URL } from 'url'
 
 export const jira_server =
   process.env.JIRA_URL || 'https://atc.bmwgroup.net/jira'
